@@ -13,16 +13,16 @@
 
 
 using namespace std;
-// размер пол€
+// field size
 const unsigned int DIM_X = 30;
 const unsigned int DIM_Y = 30;
-//число врагов
+//number of enemies
 const unsigned int NUMBER_OF_ENEMY = 5;
-//число стен
+//number of walls
 const unsigned int NUMBER_OF_WALL = 10;
-//максимальна€ длина стен
+//maximum length of walls
 const unsigned int MAX_LENGTH_OF_WALL = 10;
-//параметры играбельности частота смены направлени€  и движени€, шанс выстрела 1/n
+//game options   chance 1/n
 const unsigned int CHANCE_CHANGE_DIRECRION = 2;
 const unsigned int CHANCE_ENEMY_MOVE = 2;
 const unsigned int CHANCE_SHOOT_ENEMY = 10;
@@ -39,7 +39,9 @@ public:
 
 	GameObject(int, int, int, int);
 	GameObject();
+
 	void generatePosition(int maxX, int maxY, int direction, int length);
+
 	void move()
 	{
 
@@ -138,24 +140,25 @@ public:
 
 
 	}
-
+	// Initialize gaming variables and arrays
 	void gameInit();
-	// проверка свободной площади
+	// check of free space
 	bool isPossibleSetArea(int x0, int y0, int x1, int y1);
-	//проверка свободной 
+	//check of free point
 	int isPossibleSetPoint(int x0, int y0);
-	// возможность установки обьекта с дистанцией до других обьектов
+	// check the possibility of installing an object with a distance to other objects
 	bool checkPosition(const GameObject &obj, int distance);
+	//insert game object to array
 	void populateMap(const GameObject &obj);
-	//пермещение игрового обьекта
-	int moveGameObj(GameObject & obj, int direct);
-
+	//moove game object
+	int moveGameObj( static GameObject & obj, int direct);
+	// hit the tank
 	void tankGoal(static Bullet & bullet);
 
 	void graphics(); //Drawing game
-	void gameLogic(); //Does it need comment?
+	void gameLogic(); 
 	void keyboard(); //Checking for input
-	void start(); //Start -_-
+	void start(); //Start 
 
 };
 
@@ -179,14 +182,14 @@ void sp(int choosecolor)
 void s()
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-	//FUNCTION TO ..EHM FORGET COLOR,not sure how to say I know: Stop using color
+	//FUNCTION TO  FORGET COLOR,not sure how to say I know: Stop using color
 }
 
 
 int main()
 {
 	srand((unsigned)time(0)); //So random numbers will be always random.
-	Game CrazyTanks; //creating class m
+	Game CrazyTanks; 
 	CrazyTanks.start();
 	return 0;
 }
@@ -200,7 +203,7 @@ GameObject::GameObject()
 {
 }
 
-//генерирует позицию игрового обьекта
+//generates the position of the game object
 void GameObject::generatePosition(int maxX, int maxY, int direct, int maxLength)
 {
 	x = rand() % maxX + 1;
@@ -216,7 +219,7 @@ Bullet::Bullet()
 {
 	length = 1;
 }
-// »нициализаци€ игровых перменных и массивов
+
 void Game::gameInit()
 {
 	//заполнение границ стенками
@@ -275,7 +278,7 @@ void Game::gameInit()
 	}
 
 }
-//ѕроверка на свободность пр€моугольника
+
 bool Game::isPossibleSetArea(int x0, int y0, int x1, int y1)
 {
 	if (x0 < 0 || y0 < 0 || x1 > DIM_X || y1 > DIM_Y)
@@ -299,7 +302,7 @@ bool Game::isPossibleSetArea(int x0, int y0, int x1, int y1)
 	return true;
 
 }
-//ѕроверка на свободность точки
+
 int Game::isPossibleSetPoint(int x0, int y0)
 {
 	if (x0 <= 0 || y0 <= 0 || x0 >= DIM_X || y0 >= DIM_Y)
@@ -316,7 +319,7 @@ int Game::isPossibleSetPoint(int x0, int y0)
 
 }
 
-//ѕроверка на возможность вставить в массив игрового ќбьекта
+
 bool Game::checkPosition(const GameObject & obj, int distance)
 {
 	int x0 = obj.x;
@@ -388,7 +391,7 @@ bool Game::checkPosition(const GameObject & obj, int distance)
 	return false;
 }
 
-//вставка игрового обьекта в массив
+
 void Game::populateMap(const GameObject & obj)
 {
 	int x0 = obj.x;
@@ -435,7 +438,7 @@ void Game::populateMap(const GameObject & obj)
 
 }
 
-// движение игрового обьекта
+// returns the id of the game object , if the obstruction
 int Game::moveGameObj(GameObject & obj, int direct)
 {
 	int barrierId = 0;
@@ -460,7 +463,7 @@ int Game::moveGameObj(GameObject & obj, int direct)
 }
 
 
-// ѕопадание в танк
+// tank hit
 void Game::tankGoal(Bullet & bullet)
 {
 	if (bullet.enemy == true && bullet.x == myTank.x && bullet.y == myTank.y)
@@ -491,7 +494,7 @@ void Game::tankGoal(Bullet & bullet)
 	}
 }
 
-// ќтображене игры
+// draw field
 void Game::graphics()
 {
 	for (int y = 0; y < DIM_X; y++)
@@ -610,7 +613,7 @@ void Game::graphics()
 
 }
 
-//ћеханика игры
+//Logic of game
 void Game::gameLogic()
 {
 
@@ -625,6 +628,7 @@ void Game::gameLogic()
 	{
 		gameWin = true;
 	}
+
 	// move my tank
 	direction = -1;
 	shoot = 0;
@@ -652,7 +656,7 @@ void Game::gameLogic()
 		bullets.push_back(myBullet);
 	}
 
-	// движение и стрельба вражеского танка
+	// movement and shooting of enemy tank
 	for (int i = 0; i < enemyTanks.size(); i++)
 	{
 		int rndChangeDirect = rand() % CHANCE_CHANGE_DIRECRION;
@@ -672,7 +676,7 @@ void Game::gameLogic()
 
 		
 
-		// вражеский танк стрел€ет
+		// enemy tank shoots
 
 		int rndShoot = rand() % CHANCE_SHOOT_ENEMY;
 		if ((myTank.x == enemyTanks[i].x || myTank.y == enemyTanks[i].y) && rndShoot == 1)
@@ -707,8 +711,7 @@ void Game::gameLogic()
 
 	}
 
-	//move bullets
-
+	//bullet movement
 	if (bullets.empty() == false) {
 		int targetId = 0;
 
@@ -734,7 +737,6 @@ void Game::gameLogic()
 
 }
 
-//ѕроверка клавиатуры
 void Game::keyboard()
 {
 
@@ -797,7 +799,7 @@ void Game::keyboard()
 
 	}
 }
-//«апуск игры
+
 void Game::start()
 {
 	gameInit();
