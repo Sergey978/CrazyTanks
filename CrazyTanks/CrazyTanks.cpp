@@ -113,29 +113,17 @@ public:
 class Game
 {
 
-private:
-	int  direction; // 0 -north; 1 - south ; 2 - east; 3 - west
-	bool shoot, gameOver, gameWin, exit;
-	int lives, score, minutes, seconds;
-
-
-	int  map[DIM_X][DIM_Y]; // objects in map 0-empty, 1-wall, 2- my tank, 3 -enemy tank , 4 - my bullet, 5 - enemy bullet
-	Tank myTank;
-	vector<Tank> enemyTanks;
-	vector <Bullet> bullets;
-	vector <Wall> walls;
-
 
 public:
 	Game()
 	{
-		gameWin = false;
-		gameOver = false;
-		exit = false;
-		lives = 3;
-		score = 0;
-		seconds = 0;
-		minutes = 0;
+		gameWin_ = false;
+		gameOver_ = false;
+		exit_ = false;
+		lives_ = 3;
+		score_ = 0;
+		seconds_ = 0;
+		minutes_ = 0;
 
 
 
@@ -149,16 +137,29 @@ public:
 	// check the possibility of installing an object with a distance to other objects
 	bool checkPosition(const GameObject &obj, int distance);
 	//insert game object to array
-	void populateMap(const GameObject &obj);
+	void populateMap(const GameObject &gameObject);
 	//moove game object
-	int moveGameObj( static GameObject & obj, int direct);
+	int moveGameObj(GameObject &gameObject, int direct);
 	// hit the tank
-	void tankGoal(static Bullet & bullet);
+	void tankGoal(Bullet &bullet);
 
 	void graphics(); //Drawing game
 	void gameLogic(); 
 	void keyboard(); //Checking for input
 	void start(); //Start 
+
+
+private:
+	int  direction_; // 0 -north; 1 - south ; 2 - east; 3 - west
+	bool shoot_, gameOver_, gameWin_, exit_;
+	int lives_, score_, minutes_, seconds_;
+
+	int  map_[DIM_X][DIM_Y]; // objects in map 0-empty, 1-wall, 2- my tank, 3 -enemy tank , 4 - my bullet, 5 - enemy bullet
+	Tank myTank_;
+	vector<Tank> enemyTanks_;
+	vector <Bullet> bullets_;
+	vector <Wall> walls_;
+
 
 };
 
@@ -227,12 +228,12 @@ void Game::gameInit()
 	{
 		for (int x = 0; x < DIM_Y; x++)
 		{
-			map[x][y] = 0;
+			map_[x][y] = 0;
 
 			// board
 			if (x == 0 || x == DIM_Y - 1 || y == 0 || y == DIM_X - 1)
 			{
-				map[x][y] = 1;
+				map_[x][y] = 1;
 			}
 
 		}
@@ -247,18 +248,18 @@ void Game::gameInit()
 	newTank.enemy = false;
 	newTank.gameObjId = 2;
 
-	myTank = newTank;
-	populateMap(myTank);
+	myTank_ = newTank;
+	populateMap(myTank_);
 
 
 	// sets walls
-	while (walls.size() < NUMBER_OF_WALL)
+	while (walls_.size() < NUMBER_OF_WALL)
 	{
 		Wall newWALL;
 		newWALL.generatePosition(DIM_X, DIM_Y, 4, MAX_LENGTH_OF_WALL);
 		if (checkPosition(newWALL, 1))
 		{
-			walls.push_back(newWALL);
+			walls_.push_back(newWALL);
 			populateMap(newWALL);
 
 		}
@@ -266,13 +267,13 @@ void Game::gameInit()
 
 
 	//set of enemy tanks
-	while (enemyTanks.size() < NUMBER_OF_ENEMY)
+	while (enemyTanks_.size() < NUMBER_OF_ENEMY)
 	{
 		Tank newTank;
 		newTank.generatePosition(DIM_X, DIM_Y, 0, 1);
 		if (checkPosition(newTank, 2))
 		{
-			enemyTanks.push_back(newTank);
+			enemyTanks_.push_back(newTank);
 			populateMap(newTank);
 		}
 	}
@@ -290,7 +291,7 @@ bool Game::isPossibleSetArea(int x0, int y0, int x1, int y1)
 	{
 		for (int y = y0; y <= y1; y++)
 		{
-			if (map[x][y] != 0)
+			if (map_[x][y] != 0)
 			{
 				return false;
 			}
@@ -310,9 +311,9 @@ int Game::isPossibleSetPoint(int x0, int y0)
 		return -1;
 	}
 
-	if (map[x0][y0] != 0)
+	if (map_[x0][y0] != 0)
 	{
-		return map[x0][y0];
+		return map_[x0][y0];
 	}
 
 	return 0;
@@ -320,21 +321,21 @@ int Game::isPossibleSetPoint(int x0, int y0)
 }
 
 
-bool Game::checkPosition(const GameObject & obj, int distance)
+bool Game::checkPosition(const GameObject &gameObject, int distance)
 {
-	int x0 = obj.x;
-	int y0 = obj.y;
-	int x1 = obj.x;
-	int y1 = obj.y;
+	int x0 = gameObject.x;
+	int y0 = gameObject.y;
+	int x1 = gameObject.x;
+	int y1 = gameObject.y;
 
-	switch (obj.direction)
+	switch (gameObject.direction)
 	{
 	case 0: // direction up
 	{
-		x0 = obj.x - distance;
-		y0 = obj.y - obj.length - distance;
-		x1 = obj.x + distance;
-		y1 = obj.y + distance;
+		x0 = gameObject.x - distance;
+		y0 = gameObject.y - gameObject.length - distance;
+		x1 = gameObject.x + distance;
+		y1 = gameObject.y + distance;
 
 		if (!isPossibleSetArea(x0, y0, x1, y1))
 		{
@@ -344,10 +345,10 @@ bool Game::checkPosition(const GameObject & obj, int distance)
 
 	case 1: //direction down
 	{
-		x0 = obj.x - distance;
-		y0 = obj.y - distance;
-		x1 = obj.x + distance;
-		y1 = obj.y + obj.length + distance;
+		x0 = gameObject.x - distance;
+		y0 = gameObject.y - distance;
+		x1 = gameObject.x + distance;
+		y1 = gameObject.y + gameObject.length + distance;
 
 		if (!isPossibleSetArea(x0, y0, x1, y1))
 		{
@@ -358,10 +359,10 @@ bool Game::checkPosition(const GameObject & obj, int distance)
 
 	case 2: //direction right
 	{
-		x0 = obj.x - distance;
-		y0 = obj.y - distance;
-		x1 = obj.x + obj.length + distance;
-		y1 = obj.y + distance;
+		x0 = gameObject.x - distance;
+		y0 = gameObject.y - distance;
+		x1 = gameObject.x + gameObject.length + distance;
+		y1 = gameObject.y + distance;
 
 		if (!isPossibleSetArea(x0, y0, x1, y1))
 		{
@@ -372,10 +373,10 @@ bool Game::checkPosition(const GameObject & obj, int distance)
 	}
 	case 3: //direction left
 	{
-		x0 = obj.x - obj.length - distance;
-		y0 = obj.y - distance;
-		x1 = obj.x + distance;
-		y1 = obj.y + distance;
+		x0 = gameObject.x - gameObject.length - distance;
+		y0 = gameObject.y - distance;
+		x1 = gameObject.x + distance;
+		y1 = gameObject.y + distance;
 
 		if (!isPossibleSetArea(x0, y0, x1, y1))
 		{
@@ -392,37 +393,37 @@ bool Game::checkPosition(const GameObject & obj, int distance)
 }
 
 
-void Game::populateMap(const GameObject & obj)
+void Game::populateMap(const GameObject &gameObject)
 {
-	int x0 = obj.x;
-	int y0 = obj.y;
-	int x1 = obj.x;
-	int y1 = obj.y;
-	int lng = obj.length - 1;
+	int x0 = gameObject.x;
+	int y0 = gameObject.y;
+	int x1 = gameObject.x;
+	int y1 = gameObject.y;
+	int lng = gameObject.length - 1;
 
-	switch (obj.direction)
+	switch (gameObject.direction)
 	{
 	case 0: // direction up
 	{
-		y0 = obj.y - lng;
+		y0 = gameObject.y - lng;
 		break;
 	}
 
 
 	case 1: //direction down
 	{
-		y1 = obj.y + lng;
+		y1 = gameObject.y + lng;
 		break;
 	}
 
 	case 2: //direction right
 	{
-		x1 = obj.x + lng;
+		x1 = gameObject.x + lng;
 		break;
 	}
 	case 3: //direction left
 	{
-		x0 = obj.x - lng;
+		x0 = gameObject.x - lng;
 	}
 
 	}
@@ -431,7 +432,7 @@ void Game::populateMap(const GameObject & obj)
 	{
 		for (int x = x0; x <= x1; x++)
 		{
-			map[x][y] = obj.gameObjId;
+			map_[x][y] = gameObject.gameObjId;
 		}
 	}
 
@@ -439,22 +440,22 @@ void Game::populateMap(const GameObject & obj)
 }
 
 // returns the id of the game object , if the obstruction
-int Game::moveGameObj(GameObject & obj, int direct)
+int Game::moveGameObj(GameObject &gameObject, int direct)
 {
 	int barrierId = 0;
-	int oldX = obj.x;
-	int oldY = obj.y;
-	obj.direction = direct;
-	obj.move();
-	barrierId = isPossibleSetPoint(obj.x, obj.y);
-	if (barrierId != 0 && obj.gameObjId != 4 && obj.gameObjId != 5)
+	int oldX = gameObject.x;
+	int oldY = gameObject.y;
+	gameObject.direction = direct;
+	gameObject.move();
+	barrierId = isPossibleSetPoint(gameObject.x, gameObject.y);
+	if (barrierId != 0 && gameObject.gameObjId != 4 && gameObject.gameObjId != 5)
 	{
-		obj.x = oldX;
-		obj.y = oldY;
+		gameObject.x = oldX;
+		gameObject.y = oldY;
 	}
 	else
 	{
-		map[oldX][oldY] = 0;
+		map_[oldX][oldY] = 0;
 
 	}
 
@@ -464,27 +465,27 @@ int Game::moveGameObj(GameObject & obj, int direct)
 
 
 // tank hit
-void Game::tankGoal(Bullet & bullet)
+void Game::tankGoal(Bullet &bullet)
 {
-	if (bullet.enemy == true && bullet.x == myTank.x && bullet.y == myTank.y)
+	if (bullet.enemy == true && bullet.x == myTank_.x && bullet.y == myTank_.y)
 	{
 		//my tank is hit
 
-		lives--;
+		lives_--;
 
 	}
 	else if (bullet.enemy == false)
 	{
 		// enemy tank hit
-		if (enemyTanks.empty() == false) {
+		if (enemyTanks_.empty() == false) {
 
-			for (int i = enemyTanks.size() - 1; i >= 0; i--) {
-				if (enemyTanks[i].x == bullet.x && enemyTanks[i].x == bullet.x)
+			for (int i = enemyTanks_.size() - 1; i >= 0; i--) {
+				if (enemyTanks_[i].x == bullet.x && enemyTanks_[i].x == bullet.x)
 				{
-					map[enemyTanks[i].x][enemyTanks[i].y] = 0;
+					map_[enemyTanks_[i].x][enemyTanks_[i].y] = 0;
 
-					enemyTanks.erase(enemyTanks.begin() + i);
-					score++;
+					enemyTanks_.erase(enemyTanks_.begin() + i);
+					score_++;
 					continue;
 				}
 
@@ -501,7 +502,7 @@ void Game::graphics()
 	{
 		for (int x = 0; x < DIM_Y; x++)
 		{
-			switch (map[x][y])
+			switch (map_[x][y])
 			{
 
 			case 0:
@@ -560,30 +561,30 @@ void Game::graphics()
 		{
 		case DIM_Y / 2:
 		{
-			cout << " Lives   " << lives << endl;
+			cout << " Lives   " << lives_ << endl;
 			break;
 		}
 		case DIM_Y / 2 + 1:
 		{
-			cout << " Score   " << score << endl;
+			cout << " Score   " << score_ << endl;
 			break;
 		}
 
 		case DIM_Y / 2 + 2:
 		{
-			cout << " Time   " << minutes << " : " << seconds << ' ' << endl;
+			cout << " Time   " << minutes_ << " : " << seconds_ << ' ' << endl;
 			break;
 		}
 
 		case DIM_Y / 2 + 4:
 		{
-			if (gameOver == true)
+			if (gameOver_ == true)
 			{
 				cout << " Game over!    " << endl;
 				break;
 			}
 
-			if (gameWin == true)
+			if (gameWin_ == true)
 			{
 				cout << " You Win!    " << endl;
 				break;
@@ -592,7 +593,7 @@ void Game::graphics()
 
 		case DIM_Y / 2 + 6:
 		{
-			if (gameOver == true || gameWin == true)
+			if (gameOver_ == true || gameWin_ == true)
 			{
 				cout << " Press Enter for exit   " << endl;
 				break;
@@ -617,50 +618,50 @@ void Game::graphics()
 void Game::gameLogic()
 {
 
-	seconds = (clock() / 1000) % 60;
-	minutes = (clock() / 1000) / 60;
-	if (lives == 0)
+	seconds_ = (clock() / 1000) % 60;
+	minutes_ = (clock() / 1000) / 60;
+	if (lives_ == 0)
 	{
-		gameOver = true;
+		gameOver_ = true;
 	}
 
-	if (enemyTanks.size() == 0)
+	if (enemyTanks_.size() == 0)
 	{
-		gameWin = true;
+		gameWin_ = true;
 	}
 
 	// move my tank
-	direction = -1;
-	shoot = 0;
+	direction_ = -1;
+	shoot_ = 0;
 	keyboard();
-	int oldX = myTank.x;
-	int oldY = myTank.y;
-	if (direction >= 0)
+	int oldX = myTank_.x;
+	int oldY = myTank_.y;
+	if (direction_ >= 0)
 	{
 
-		moveGameObj(myTank, direction);
-		populateMap(myTank);
+		moveGameObj(myTank_, direction_);
+		populateMap(myTank_);
 
 	}
 
 	// If my Tank shoot
-	if (shoot == 1)
+	if (shoot_ == 1)
 	{
 		Bullet myBullet;
-		myBullet.direction = myTank.direction;
-		myBullet.x = myTank.x;
-		myBullet.y = myTank.y;
+		myBullet.direction = myTank_.direction;
+		myBullet.x = myTank_.x;
+		myBullet.y = myTank_.y;
 		myBullet.enemy = false;
 		myBullet.gameObjId = 4;
 		myBullet.length = 1;
-		bullets.push_back(myBullet);
+		bullets_.push_back(myBullet);
 	}
 
 	// movement and shooting of enemy tank
-	for (int i = 0; i < enemyTanks.size(); i++)
+	for (int i = 0; i < enemyTanks_.size(); i++)
 	{
 		int rndChangeDirect = rand() % CHANCE_CHANGE_DIRECRION;
-		int newDirection = enemyTanks[i].direction;
+		int newDirection = enemyTanks_[i].direction;
 
 		if (rndChangeDirect == 1)
 		{
@@ -671,7 +672,7 @@ void Game::gameLogic()
 
 		if (rndMove == 1)
 		{
-			moveGameObj(enemyTanks[i], newDirection);
+			moveGameObj(enemyTanks_[i], newDirection);
 		}
 
 		
@@ -679,59 +680,59 @@ void Game::gameLogic()
 		// enemy tank shoots
 
 		int rndShoot = rand() % CHANCE_SHOOT_ENEMY;
-		if ((myTank.x == enemyTanks[i].x || myTank.y == enemyTanks[i].y) && rndShoot == 1)
+		if ((myTank_.x == enemyTanks_[i].x || myTank_.y == enemyTanks_[i].y) && rndShoot == 1)
 		{
 			//determinne direction enemy bullåò
-			direction = 0;
-			int deltaX = myTank.x - enemyTanks[i].x;
-			int deltaY = myTank.y - enemyTanks[i].y;
+			direction_ = 0;
+			int deltaX = myTank_.x - enemyTanks_[i].x;
+			int deltaY = myTank_.y - enemyTanks_[i].y;
 
 			//up
-			if (deltaX == 0 && deltaY < 0) { direction = 0; }
+			if (deltaX == 0 && deltaY < 0) { direction_ = 0; }
 			//down
-			if (deltaX == 0 && deltaY > 0) { direction = 1; }
+			if (deltaX == 0 && deltaY > 0) { direction_ = 1; }
 			//right
-			if (deltaY == 0 && deltaX > 0) { direction = 2; }
+			if (deltaY == 0 && deltaX > 0) { direction_ = 2; }
 			//left
-			if (deltaY == 0 && deltaX < 0) { direction = 3; }
+			if (deltaY == 0 && deltaX < 0) { direction_ = 3; }
 
 
 
 			Bullet enemyBullet;
-			enemyBullet.direction = direction;
-			enemyBullet.x = enemyTanks[i].x;
-			enemyBullet.y = enemyTanks[i].y;
+			enemyBullet.direction = direction_;
+			enemyBullet.x = enemyTanks_[i].x;
+			enemyBullet.y = enemyTanks_[i].y;
 			enemyBullet.enemy = true;
 			enemyBullet.gameObjId = 5;
-			bullets.push_back(enemyBullet);
+			bullets_.push_back(enemyBullet);
 		}
 
 
-		populateMap(enemyTanks[i]);
+		populateMap(enemyTanks_[i]);
 
 	}
 
 	//bullet movement
-	if (bullets.empty() == false) {
+	if (bullets_.empty() == false) {
 		int targetId = 0;
 
-		for (int i = bullets.size() - 1; i >= 0; i--) {
-			map[bullets[i].x][bullets[i].y] = 0;
-			targetId = moveGameObj(bullets[i], bullets[i].direction);
+		for (int i = bullets_.size() - 1; i >= 0; i--) {
+			map_[bullets_[i].x][bullets_[i].y] = 0;
+			targetId = moveGameObj(bullets_[i], bullets_[i].direction);
 
 			if (targetId != 0) {
 
 
 				if (targetId == 2 || targetId == 3)
 				{
-					tankGoal(bullets[i]);
+					tankGoal(bullets_[i]);
 				}
 
-				bullets.erase(bullets.begin() + i);
+				bullets_.erase(bullets_.begin() + i);
 				continue;
 			}
-			populateMap(bullets[i]);
-			populateMap(myTank);
+			populateMap(bullets_[i]);
+			populateMap(myTank_);
 		}
 	}
 
@@ -752,36 +753,36 @@ void Game::keyboard()
 		case 72:
 
 		{
-			direction = 0;
+			direction_ = 0;
 			break;
 		}
 
 		case 80:
 		{
-			direction = 1;
+			direction_ = 1;
 			break;
 		}
 
 		case 75:
 		{
-			direction = 3;
+			direction_ = 3;
 			break;
 		}
 
 		case 77:
 		{
-			direction = 2;
+			direction_ = 2;
 			break;
 		}
 		case 32:
 		{
-			shoot = 1;
+			shoot_ = 1;
 			break;
 		}
 
 		case 13:
 		{
-			exit = true;
+			exit_ = true;
 			break;
 		}
 
@@ -790,8 +791,8 @@ void Game::keyboard()
 		default:
 		{
 
-			shoot = 0;
-			direction = -1;
+			shoot_ = 0;
+			direction_ = -1;
 		}
 
 
@@ -804,14 +805,14 @@ void Game::start()
 {
 	gameInit();
 
-	while (!gameOver && !gameWin) {
+	while (!gameOver_ && !gameWin_) {
 
 		gameLogic();
 		graphics();
 	}
 
 
-	while (!exit)
+	while (!exit_)
 	{
 		keyboard();
 		Sleep(50);
