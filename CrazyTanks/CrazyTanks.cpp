@@ -222,7 +222,7 @@ Bullet::Bullet()
 
 void Game::gameInit()
 {
-	//заполнение границ стенками
+	//sets wall on borders
 	for (int y = 0; y < DIM_X; y++)
 	{
 		for (int x = 0; x < DIM_Y; x++)
@@ -239,7 +239,7 @@ void Game::gameInit()
 
 	}
 
-	//установка своего танка
+	//set my Tank
 	Tank newTank;
 
 	newTank.x = DIM_X / 2;
@@ -251,7 +251,7 @@ void Game::gameInit()
 	populateMap(myTank);
 
 
-	// установка препятствий
+	// sets walls
 	while (walls.size() < NUMBER_OF_WALL)
 	{
 		Wall newWALL;
@@ -265,7 +265,7 @@ void Game::gameInit()
 	}
 
 
-	//установка вражеских танков
+	//set of enemy tanks
 	while (enemyTanks.size() < NUMBER_OF_ENEMY)
 	{
 		Tank newTank;
